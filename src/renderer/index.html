@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./renderer.js"></script>
+
+</head>
+
+
+<body>
+    <div id="app">
+        <div style="display: flex; justify-content: center;">
+            <img src="../assets/icon.png" class="logo"/>
+        </div>
+
+
+        <h1><b>Discord Monkey</b></h1>
+        <p>Looks like something went wrong, or you minimized Discord.</p>
+
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+
+        <p>Your Discord path is set to:</p>
+        <b><p id="path"></p></b>
+        <div class="spacer"></div>
+        <p>Make sure this is pointing to the correct Discord executable.</p>
+
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <button id="reboot-button">Reopen/Reattach Discord 🐒</button>
+    </div>
+
+</body>
+
+</html>
