@@ -1,7 +1,6 @@
 import * as path from "path";
 import { Process, Setting } from "@nexus/nexus-module-builder"
 import { BooleanSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
-import * as os from 'os'
 import Monkey from "./monkey";
 
 const MODULE_ID: string = "{EXPORTED_MODULE_ID}";
@@ -67,6 +66,8 @@ export default class ChildProcess extends Process {
         if (!(this.getSettings().findSetting("close_on_exit").getValue() as boolean)) {
             this.monkey.show();
         }
+        this.monkey.appWindow.setOwner(this.monkey.originalWindowID);
+        this.monkey.show();
     }
 
 

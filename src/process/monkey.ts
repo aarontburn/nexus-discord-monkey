@@ -9,6 +9,7 @@ export default class Monkey {
     private readonly process: ChildProcess;
 
     private nexusWindowHandle: number;
+    public originalWindowID: number;
     private pathToExe: string;
 
     public isShown: boolean;
@@ -30,10 +31,14 @@ export default class Monkey {
         if (existingWindow === undefined) {
             if (pathToExe.trim() !== "") {
                 console.info("🐒 Discord Monkey: Making a new Discord instance.");
-                spawn(pathToExe, [], { detached: !closeOnExit })
+                spawn(pathToExe, [], {
+                    detached: !closeOnExit,
+                    stdio: 'ignore'
+                })
                     .on('error', (err) => {
                         console.error(err)
                     });
+
             }
 
 
@@ -60,7 +65,7 @@ export default class Monkey {
 
 
 
-    private waitForRealWindow(timeout: number = 100000, interval: number = 500): Promise<Window> {
+    private waitForRealWindow(timeout: number = 100000, interval: number = 200): Promise<Window> {
         return new Promise((resolve, reject) => {
             const startMS: number = Date.now();
 
@@ -84,6 +89,8 @@ export default class Monkey {
 
 
     private attachHandlersToWindow(appWindow: Window) {
+        this.originalWindowID = appWindow.id;
+
         console.info("🐒 Discord Monkey: Discord instance found.");
 
         this.appWindow = appWindow;
@@ -95,8 +102,6 @@ export default class Monkey {
         }
 
         appWindow.setOwner(this.nexusWindowHandle);
-
-
 
         this.resize();
         const window: BaseWindow = BaseWindow.getAllWindows()[0];
