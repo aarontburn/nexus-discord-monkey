@@ -1,7 +1,8 @@
 import { spawn } from "child_process";
-import { BaseWindow, WebContentsView, Rectangle } from "electron";
+import { BaseWindow, WebContentsView, Rectangle, Display, app } from "electron";
 import { Window, windowManager } from "node-window-manager";
 import ChildProcess from "./main";
+import { screen } from "electron"
 
 
 export default class Monkey {
@@ -108,6 +109,7 @@ export default class Monkey {
         window.contentView.children[0].on('bounds-changed', this.resizeListener)
         window.on('resize', this.resizeListener)
         window.on('move', this.resizeListener)
+
     }
 
     private readonly resizeListener = () => this.resize();
@@ -125,19 +127,32 @@ export default class Monkey {
     }
 
     public show() {
-        this.appWindow?.show();
-        this.appWindow?.restore()
+        this.appWindow?.setOpacity(1);
+        this.appWindow?.toggleTransparency(false);
+        this.appWindow?.bringToTop();
         this.resize()
     }
 
     public hide() {
-        this.appWindow?.hide();
+        this.appWindow?.toggleTransparency(true);
+        this.appWindow?.setOpacity(0);
+    }
+
+    private getMonitorSize(): Rectangle {
+        const window: BaseWindow = BaseWindow.getAllWindows()[0];
+        const appScale = this.appWindow.getMonitor().getScaleFactor();
+        const scale = screen.getDisplayMatching(window.getBounds()).scaleFactor;
+        const display = screen.getDisplayMatching(window.getBounds()).bounds; 
+        return {
+            x: Math.floor(display.x * scale / appScale),
+            y: Math.floor(display.y * scale / appScale),
+            width: Math.floor(display.width * scale / appScale),
+            height: Math.floor(display.height * scale / appScale)
+        }
     }
 
 
     public resize() {
-        const windowZoom: number = (BaseWindow.getAllWindows()[0].contentView.children[0] as WebContentsView).webContents.zoomFactor;
-        const windowContentBounds: Rectangle = BaseWindow.getAllWindows()[0].getContentBounds();
 
         if (this.isMinimized()) {
             if (this.isShown) {
@@ -146,12 +161,26 @@ export default class Monkey {
                 return;
             }
         }
+
+        const window: BaseWindow = BaseWindow.getAllWindows()[0];
+        const windowZoom = (window.contentView.children[0] as WebContentsView).webContents.zoomFactor
+
+        const appMonitorSize: Rectangle = this.getMonitorSize();
+        const windowContentBounds = window.getContentBounds();
+
+        const screenBounds = screen.getDisplayMatching(window.getBounds()).bounds
+        let scales = {
+            width: screenBounds.width / appMonitorSize.width,
+            height: screenBounds.height / appMonitorSize.height
+        }
+
         this.appWindow?.setBounds({
-            x: windowContentBounds.x + (70 * windowZoom),
-            y: windowContentBounds.y,
-            width: windowContentBounds.width - (70 * windowZoom),
-            height: windowContentBounds.height,
+            x: ((windowContentBounds.x + 70 * windowZoom) / scales.height),
+            y: windowContentBounds.y / scales.height,
+            width: ((windowContentBounds.width - 70 * windowZoom) / scales.width),
+            height: (windowContentBounds.height / scales.height),
         });
+
     }
 
     private findBestWindow(): Window | undefined {
