@@ -1,0 +1,15 @@
+Buttons
+    - detach/reattach should only be displayed if there is a current connection
+    - reboot should only be displayed if there is no connection
+
+tabs
+    - connection success
+    - no path set, no connection
+    - connection lost
+    
+
+
+
+
+
+

@@ -12,10 +12,8 @@
   "devDependencies": {
     "@types/yauzl-promise": "^4.0.1",
     "electron": "^35.1.5",
+    "node-window-manager": "^2.2.4",
     "typescript": "^4.8.3",
     "yauzl-promise": "^4.0.0"
-  },
-  "dependencies": {
-    "node-window-manager": "^2.2.4"
   }
 }

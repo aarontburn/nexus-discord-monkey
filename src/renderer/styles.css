@@ -8,6 +8,24 @@
     background-color: #242424;
 }
 
+#header {
+    position: absolute;
+    height: 35px;
+    width: 100%;
+    outline: 1px solid white;
+    top: 0;
+    display: flex;
+    align-items: center;
+}
+
+#header>* {
+    margin-left: 1em;
+}
+
+#header>button {
+    padding: 2px 10px;
+}
+
 
 body {
     margin: 0;
@@ -35,7 +53,7 @@ a {
     text-decoration: none;
 }
 
-#missing-dependency > h2 {
+#missing-dependency>h2 {
     padding: 0;
     margin: 0;
     font-size: 2em;
