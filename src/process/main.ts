@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Process, Setting } from "@nexus/nexus-module-builder"
+import { DataResponse, HTTPStatusCodes, Process, Setting } from "@nexus/nexus-module-builder"
 import { BooleanSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
 import { Window } from "node-window-manager";
 
@@ -40,14 +40,23 @@ export default class ChildProcess extends Process {
         const pathToExe: string = this.getSettings().findSetting("discord_path").getValue() as string;
         const closeOnExit: boolean = this.getSettings().findSetting("close_on_exit").getValue() as boolean;
 
-        this.requestExternal('aarontburn.Monkey_Core', 'add-window', {
+        const response: DataResponse = await this.requestExternal('aarontburn.Monkey_Core', 'add-window', {
             appName: "Discord",
             exePath: pathToExe,
             closeOnExit: closeOnExit,
             isShown: this.isShown,
             filter: (w: Window) => w.getTitle().endsWith('- Discord') && w.isVisible(),
-
         } as MonkeyParams);
+
+        if (response.code === HTTPStatusCodes.NOT_FOUND) {
+            console.error(`[Discord Monkey] Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
+            this.sendToRenderer("missing_dependency", {
+                name: "Monkey Core",
+                id: "aarontburn.Monkey_Core",
+                url: "https://github.com/aarontburn/nexus-monkey-core"
+            });
+
+        }
 
         this.sendToRenderer("path", pathToExe);
     }

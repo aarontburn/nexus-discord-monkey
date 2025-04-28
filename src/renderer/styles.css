@@ -31,6 +31,21 @@ p {
     padding: 0;
 }
 
+a {
+    text-decoration: none;
+}
+
+#missing-dependency > h2 {
+    padding: 0;
+    margin: 0;
+    font-size: 2em;
+    margin-bottom: 1em;
+}
+
+#mc-link-main {
+    font-size: 1.5em;
+}
+
 #app {
     max-width: 1280px;
     margin: 0 auto;
@@ -64,10 +79,6 @@ button:hover {
     :root {
         color: #213547;
         background-color: #ffffff;
-    }
-
-    a:hover {
-        color: #747bff;
     }
 
     button {

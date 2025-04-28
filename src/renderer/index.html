@@ -15,24 +15,46 @@
 <body>
     <div id="app">
         <div style="display: flex; justify-content: center;">
-            <img src="../assets/icon.png" class="logo"/>
+            <img src="../assets/icon.png" class="logo" />
         </div>
 
 
         <h1><b>Discord Monkey</b></h1>
-        <p>Looks like something went wrong, or you minimized Discord.</p>
+        <div id="missing-dependency" style="display: none;">
+            <h2>Uh Oh...</h2>
+            <p>You're missing Monkey Core, which Discord monkey needs.</p>
+            <p>You can install Monkey Core here:</p>
+            <br />
 
-        <div class="spacer"></div>
-        <div class="spacer"></div>
+            <a href="https://github.com/aarontburn/nexus-monkey-core" target="_blank" id="mc-link-main">
+                Monkey Core
+            </a>
+            <br />
 
-        <p>Your Discord path is set to:</p>
-        <b><p id="path"></p></b>
-        <div class="spacer"></div>
-        <p>Make sure this is pointing to the correct Discord executable.</p>
+            <br />
+            <p>or <a href="https://github.com/aarontburn/nexus-monkey-core" target="_blank">
+                    https://github.com/aarontburn/nexus-monkey-core
+                </a>
+            </p>
+        </div>
+        <div id="content">
+            <p>Looks like something went wrong, or you minimized Discord.</p>
 
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-        <button id="reboot-button">Reopen/Reattach Discord 🐒</button>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+
+            <p>Your Discord path is set to:</p>
+            <b>
+                <p id="path"></p>
+            </b>
+            <div class="spacer"></div>
+            <p>Make sure this is pointing to the correct Discord executable.</p>
+
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <button id="reboot-button">Reopen/Reattach Discord 🐒</button>
+        </div>
+
     </div>
 
 </body>

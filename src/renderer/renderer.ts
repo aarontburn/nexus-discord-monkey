@@ -10,6 +10,11 @@ const handleEvent = (eventType: string, data: any[]) => {
             document.getElementById("path").innerText = data[0];
             break;
         }
+        case "missing_dependency": {
+            document.getElementById('missing-dependency').style.display = "";
+            document.getElementById('content').style.display = 'none';
+            break;
+        }
 
         default: {
             console.warn("Uncaught message: " + eventType + " | " + data)
