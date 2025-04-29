@@ -9,7 +9,7 @@ And by "embed", this just takes your Discord window and monkeys it around.
 
 
 <p align="center">
-  <img src="assets/image.png" alt="Discord Monkey Sample" width="1000"/>
+  <img src="./assets/sample-image.png" alt="Discord Monkey Sample" width="1000"/>
 </p>
 
 ## Required Dependencies
