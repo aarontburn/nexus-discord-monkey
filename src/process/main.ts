@@ -22,8 +22,6 @@ interface MonkeyParams {
 
 
 export default class ChildProcess extends Process {
-
-
     private isShown: boolean = false;
 
     private isMonkeyCoreInstalled: boolean = false;
@@ -67,6 +65,7 @@ export default class ChildProcess extends Process {
         } else {
             this.isMonkeyCoreInstalled = true;
         }
+
     }
 
     private onMonkeyEvent(event: string) {
@@ -172,4 +171,7 @@ export default class ChildProcess extends Process {
         }
     }
 
+    
+
 }
+

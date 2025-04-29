@@ -3,7 +3,7 @@
     "author": "aarontburn",
     "version": "1.0.0",
     "description": "'Embedding' Discord as a Nexus module. By monkeying it around.",
-    "build_version": 2,
+    "build_version": 3,
     "platforms": [],
     "link": "https://github.com/aarontburn/nexus-discord-monkey"
 }

@@ -9,7 +9,6 @@ const getElement = (id: string): HTMLElement => document.getElementById(id);
 let looking: [boolean] = [false];
 
 const handleEvent = (eventType: string, data: any[]) => {
-    console.log(eventType)
     switch (eventType) {
         case "path": {
             getElement("path").innerText = data[0];
@@ -97,10 +96,10 @@ function waitCountdown() {
                 break;
             }
 
-            getElement('wait-button').innerText = `Waiting for window (${WAIT_TIME_SECONDS - i})`;
+            getElement('wait-button').innerText = `Locating window (${WAIT_TIME_SECONDS - i})`;
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        getElement('wait-button').innerText = `Wait for window`;
+        getElement('wait-button').innerText = `Locate window`;
         (getElement('wait-button') as HTMLButtonElement).disabled = false;
     })();
 }
