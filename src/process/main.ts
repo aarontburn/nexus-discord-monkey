@@ -1,6 +1,6 @@
 import * as path from "path";
-import { DataResponse, HTTPStatusCodes, IPCSource, Process, Setting } from "@nexus/nexus-module-builder"
-import { BooleanSetting, StringSetting } from "@nexus/nexus-module-builder/settings/types";
+import { DataResponse, HTTPStatusCodes, IPCSource, Process, Setting } from "@nexus-app/nexus-module-builder"
+import { BooleanSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 import { Window } from "node-window-manager";
 import * as fs from 'fs';
 
