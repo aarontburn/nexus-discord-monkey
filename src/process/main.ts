@@ -15,6 +15,7 @@ interface MonkeyParams {
     filter: (window: Window) => boolean;
     closeOnExit: boolean;
     isShown: boolean;
+    locateOnStartup?: boolean | undefined;
     callback?: (event: string) => void
 }
 
@@ -42,25 +43,27 @@ export default class ChildProcess extends Process {
     public async initialize(): Promise<void> {
         await super.initialize();
 
-        const pathToExe: string = this.getSettings().findSetting("discord_path").getValue() as string;
+        const pathToExe: string = this.getSettings().findSetting("path").getValue() as string;
         const closeOnExit: boolean = this.getSettings().findSetting("close_on_exit").getValue() as boolean;
+        const locateOnStartup: boolean = this.getSettings().findSetting("locate_on_startup").getValue() as boolean;
+    
+        if (locateOnStartup) {
+            this.sendToRenderer("locate");
+        }
 
         const response: DataResponse = await this.requestExternal('aarontburn.Monkey_Core', 'add-window', {
             appName: "Discord",
             exePath: pathToExe,
             closeOnExit: closeOnExit,
             isShown: this.isShown,
+            locateOnStartup: locateOnStartup,
             filter: (w: Window) => w.path.endsWith("Discord.exe") && w.getTitle().endsWith('- Discord') && w.isVisible(),
             callback: this.onMonkeyEvent.bind(this)
         } as MonkeyParams);
 
         if (response.code === HTTPStatusCodes.NOT_FOUND) {
             console.error(`[Discord Monkey] Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
-            this.sendToRenderer("missing_dependency", {
-                name: "Monkey Core",
-                id: "aarontburn.Monkey_Core",
-                url: "https://github.com/aarontburn/nexus-monkey-core"
-            });
+            this.sendToRenderer("missing_dependency");
 
         } else {
             this.isMonkeyCoreInstalled = true;
@@ -105,7 +108,7 @@ export default class ChildProcess extends Process {
                 .setDefault('')
                 .setName("Discord Executable Path")
                 .setDescription("The path to your Discord executable file. Restart required.")
-                .setAccessID('discord_path')
+                .setAccessID('path')
                 .setValidator(s => {
                     return (s as string).replace(/\\\\/g, '/')
                 }),
@@ -114,13 +117,18 @@ export default class ChildProcess extends Process {
                 .setName("Close Discord on Exit")
                 .setDefault(false)
                 .setDescription("This will only work when Discord is opened through Discord Monkey. Restart required.")
-                .setAccessID('close_on_exit')
+                .setAccessID('close_on_exit'),
 
+            new BooleanSetting(this)
+                .setName("Locate/Open Discord on Startup")
+                .setDefault(true)
+                .setDescription("Locates (or create a new instance of Discord) on startup.")
+                .setAccessID('locate_on_startup')
         ];
     }
 
     public async onSettingModified(modifiedSetting?: Setting<unknown>): Promise<void> {
-        if (modifiedSetting?.getAccessID() === 'discord_path') {
+        if (modifiedSetting?.getAccessID() === 'path') {
             const path: string = modifiedSetting.getValue() as string;
             try {
                 await fs.promises.access(path);

@@ -10,6 +10,10 @@ let looking: [boolean] = [false];
 
 const handleEvent = (eventType: string, data: any[]) => {
     switch (eventType) {
+        case "locate": {
+            waitCountdown();
+            break;
+        }
         case "path": {
             getElement("path").innerText = data[0];
             break;
@@ -103,4 +107,3 @@ function waitCountdown() {
         (getElement('wait-button') as HTMLButtonElement).disabled = false;
     })();
 }
-waitCountdown()
