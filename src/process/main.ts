@@ -50,7 +50,7 @@ export default class ChildProcess extends Process {
             exePath: pathToExe,
             closeOnExit: closeOnExit,
             isShown: this.isShown,
-            filter: (w: Window) => w.getTitle().endsWith('- Discord') && w.isVisible(),
+            filter: (w: Window) => w.path.endsWith("Discord.exe") && w.getTitle().endsWith('- Discord') && w.isVisible(),
             callback: this.onMonkeyEvent.bind(this)
         } as MonkeyParams);
 
@@ -171,7 +171,7 @@ export default class ChildProcess extends Process {
         }
     }
 
-    
+
 
 }
 

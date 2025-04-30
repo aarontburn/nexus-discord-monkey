@@ -1,6 +1,5 @@
 {
   "name": "nexus-discord-monkey",
-  "version": "1.0.0",
   "description": "'Embedding' Discord as a Nexus module. By monkeying it around.",
   "author": "aarontburn",
   "scripts": {
