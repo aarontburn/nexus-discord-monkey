@@ -15,7 +15,7 @@ interface MonkeyParams {
     exePath: string;
     windowPath?: string;
     filter: Filter;
-    onEvent?: ((event: MonkeyEvents) => void) | undefined,
+    onEvent?: ((event: MonkeyEvents, data?: any) => void) | undefined,
     options?: {
         closeOnExit?: boolean;
         isCurrentlyShown?: boolean;
@@ -27,10 +27,14 @@ interface MonkeyParams {
 type Filter = (window: Window) => boolean;
 
 type MonkeyEvents =
-    "found-window" |
+    "window-found" |
+    "window-not-found" |
     "show" |
     "hide" |
-    "lost-window"
+    "lost-window" |
+    "new-instance" |
+    "new-instance-failed"
+
 
 const APP_NAME: string = 'Discord';
 
@@ -84,7 +88,7 @@ export default class ChildProcess extends Process {
         const response: DataResponse = await this.requestExternal('aarontburn.Monkey_Core', 'add-window', params);
 
         if (response.code === HTTPStatusCodes.NOT_FOUND) {
-            console.error(`[${APP_NAME} Monkey] Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
+            console.error(`🐒 ${APP_NAME} Monkey: Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
             this.sendToRenderer("missing_dependency");
 
         } else {
@@ -93,14 +97,35 @@ export default class ChildProcess extends Process {
 
     }
 
-    private onMonkeyEvent(event: string) {
+    private onMonkeyEvent(event: MonkeyEvents, data?: any) {
         switch (event) {
-            case 'found-window': {
+            case 'window-found': {
+                const attemptCount: number = data;
+                console.info(`🐒 ${APP_NAME} Monkey: Located window in ${attemptCount} attempts.`);
+
                 this.sendToRenderer("found-window");
                 break;
             }
+            case 'window-not-found': {
+                console.warn(`🐒 ${APP_NAME} Monkey: Could not locate ${APP_NAME} within timeout.`);
+                break;
+            }
             case "lost-window": {
+                console.warn(`🐒 ${APP_NAME} Monkey: Lost reference to window.`);
                 this.sendToRenderer("lost-window");
+                break;
+            }
+            case 'new-instance': {
+                console.info(`🐒 ${APP_NAME} Monkey: Making a new ${APP_NAME} instance.`);
+                break;
+            }
+            case 'new-instance-failed': {
+                const error: any = data;
+                if (error.code === "ENOENT") { // file doesn't exist
+                    console.warn(`🐒 ${APP_NAME} Monkey: No file found at ${this.getSettings().findSetting("path").getValue()}`);
+                } else {
+                    console.error(error);
+                }
                 break;
             }
         }
@@ -194,10 +219,12 @@ export default class ChildProcess extends Process {
                 break;
             }
             case "detach": {
+                console.info(`🐒 ${APP_NAME} Monkey: Detaching window.`);
                 this.requestExternal('aarontburn.Monkey_Core', 'detach');
                 break;
             }
             case "reattach": {
+                console.info(`🐒 ${APP_NAME} Monkey: Reattaching window.`);
                 this.requestExternal('aarontburn.Monkey_Core', 'reattach');
                 break;
             }
