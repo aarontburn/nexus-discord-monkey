@@ -3,6 +3,7 @@ import { DataResponse, HTTPStatusCodes, IPCSource, Process, Setting } from "@nex
 import { BooleanSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 import { Window } from "node-window-manager";
 import * as fs from 'fs';
+import { Rectangle } from "electron";
 
 const MODULE_ID: string = "{EXPORTED_MODULE_ID}";
 const MODULE_NAME: string = "{EXPORTED_MODULE_NAME}";
@@ -12,15 +13,26 @@ const ICON_PATH: string = path.join(__dirname, "../assets/icon.png")
 interface MonkeyParams {
     appName: string;
     exePath: string;
-    filter: (window: Window) => boolean;
-    closeOnExit: boolean;
-    isShown: boolean;
-    locateOnStartup?: boolean | undefined;
-    callback?: (event: string) => void
+    windowPath?: string;
+    filter: Filter;
+    onEvent?: ((event: MonkeyEvents) => void) | undefined,
+    options?: {
+        closeOnExit?: boolean;
+        isCurrentlyShown?: boolean;
+        locateOnStartup?: boolean;
+        openOnStartup?: boolean;
+        offset?: Partial<Rectangle>;
+    }
 }
+type Filter = (window: Window) => boolean;
 
+type MonkeyEvents =
+    "found-window" |
+    "show" |
+    "hide" |
+    "lost-window"
 
-
+const APP_NAME: string = 'Discord';
 
 export default class ChildProcess extends Process {
     private isShown: boolean = false;
@@ -43,26 +55,36 @@ export default class ChildProcess extends Process {
     public async initialize(): Promise<void> {
         await super.initialize();
 
-        const pathToExe: string = this.getSettings().findSetting("path").getValue() as string;
-        const closeOnExit: boolean = this.getSettings().findSetting("close_on_exit").getValue() as boolean;
-        const locateOnStartup: boolean = this.getSettings().findSetting("locate_on_startup").getValue() as boolean;
-    
-        if (locateOnStartup) {
+        this.sendToRenderer('params', {
+            appName: APP_NAME
+        });
+
+        if (this.getSettings().findSetting("locate_on_startup").getValue()) {
             this.sendToRenderer("locate");
         }
 
-        const response: DataResponse = await this.requestExternal('aarontburn.Monkey_Core', 'add-window', {
-            appName: "Discord",
-            exePath: pathToExe,
-            closeOnExit: closeOnExit,
-            isShown: this.isShown,
-            locateOnStartup: locateOnStartup,
+        const params: MonkeyParams = {
+            appName: APP_NAME,
+            exePath: this.getSettings().findSetting("path").getValue() as string,
+            windowPath: this.getSettings().findSetting("window_path").getValue() as string,
             filter: (w: Window) => w.path.endsWith("Discord.exe") && w.getTitle().endsWith('- Discord') && w.isVisible(),
-            callback: this.onMonkeyEvent.bind(this)
-        } as MonkeyParams);
+            onEvent: this.onMonkeyEvent.bind(this),
+            options: {
+                closeOnExit: this.getSettings().findSetting("close_on_exit").getValue() as boolean,
+                isCurrentlyShown: this.isShown,
+                locateOnStartup: this.getSettings().findSetting("locate_on_startup").getValue() as boolean,
+                openOnStartup: this.getSettings().findSetting("open_on_startup").getValue() as boolean,
+                offset: { // allow room for the header
+                    y: 35,
+                    height: -35
+                }
+            }
+        }
+
+        const response: DataResponse = await this.requestExternal('aarontburn.Monkey_Core', 'add-window', params);
 
         if (response.code === HTTPStatusCodes.NOT_FOUND) {
-            console.error(`[Discord Monkey] Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
+            console.error(`[${APP_NAME} Monkey] Missing dependency: Monkey Core (aarontburn.Monkey_Core) https://github.com/aarontburn/nexus-monkey-core`);
             this.sendToRenderer("missing_dependency");
 
         } else {
@@ -106,24 +128,36 @@ export default class ChildProcess extends Process {
         return [
             new StringSetting(this)
                 .setDefault('')
-                .setName("Discord Executable Path")
-                .setDescription("The path to your Discord executable file. Restart required.")
+                .setName(`${APP_NAME} Executable Path`)
+                .setDescription(`The path to your ${APP_NAME} executable file. Restart required.`)
                 .setAccessID('path')
-                .setValidator(s => {
-                    return (s as string).replace(/\\\\/g, '/')
-                }),
+                .setValidator(s => (s as string).replace(/\\\\/g, '/')),
+
+            new StringSetting(this)
+                .setDefault('')
+                .setName(`${APP_NAME} Window Path`)
+                .setDescription(`Specify this if the window path is different than the executable path.`)
+                .setAccessID('window_path')
+                .setValidator(s => (s as string).replace(/\\\\/g, '/')),
 
             new BooleanSetting(this)
-                .setName("Close Discord on Exit")
+                .setName(`Close ${APP_NAME} on Exit`)
                 .setDefault(false)
-                .setDescription("This will only work when Discord is opened through Discord Monkey. Restart required.")
+                .setDescription(`This will only work when ${APP_NAME} is opened through ${APP_NAME} Monkey. Restart required.`)
                 .setAccessID('close_on_exit'),
 
             new BooleanSetting(this)
-                .setName("Locate/Open Discord on Startup")
+                .setName(`Locate ${APP_NAME} on Startup`)
                 .setDefault(true)
-                .setDescription("Locates (or create a new instance of Discord) on startup.")
-                .setAccessID('locate_on_startup')
+                .setDescription(`Locates (or create a new instance of ${APP_NAME}) on startup.`)
+                .setAccessID('locate_on_startup'),
+
+            new BooleanSetting(this)
+                .setName(`Open ${APP_NAME} on Startup`)
+                .setDefault(true)
+                .setDescription(`Locates (or create a new instance of ${APP_NAME}) on startup.`)
+                .setAccessID('open_on_startup')
+
         ];
     }
 

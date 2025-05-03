@@ -10,6 +10,11 @@ let looking: [boolean] = [false];
 
 const handleEvent = (eventType: string, data: any[]) => {
     switch (eventType) {
+        case 'params': {
+            const { appName } = data[0];
+            Array.from(document.getElementsByClassName('app-name')).forEach((e: HTMLElement) => e.innerText = appName)
+            break;
+        }
         case "locate": {
             waitCountdown();
             break;
