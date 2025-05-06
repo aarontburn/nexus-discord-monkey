@@ -1,6 +1,6 @@
 # [Nexus](https://github.com/aarontburn/nexus-core): Discord Monkey
 
-  <img src="./src/assets/icon.png" alt="Discord Monkey Icon" width="200"/>
+<img src="./src/assets/icon.png" alt="Discord Monkey Icon" width="200"/>
 
 A module for [Nexus](https://github.com/aarontburn/nexus-core) to "embed" Discord as a Nexus module...
 

@@ -3,7 +3,7 @@ import { DataResponse, HTTPStatusCodes, IPCSource, Process, Setting } from "@nex
 import { BooleanSetting, StringSetting } from "@nexus-app/nexus-module-builder/settings/types";
 import { Window } from "node-window-manager";
 import * as fs from 'fs';
-import { Rectangle } from "electron";
+import { BaseWindow, BrowserWindow, Rectangle } from "electron";
 
 const MODULE_ID: string = "{EXPORTED_MODULE_ID}";
 const MODULE_NAME: string = "{EXPORTED_MODULE_NAME}";
@@ -59,6 +59,9 @@ export default class ChildProcess extends Process {
     public async initialize(): Promise<void> {
         await super.initialize();
 
+
+
+
         this.sendToRenderer('params', {
             appName: APP_NAME
         });
@@ -94,6 +97,8 @@ export default class ChildProcess extends Process {
         } else {
             this.isMonkeyCoreInstalled = true;
         }
+
+
 
     }
 
