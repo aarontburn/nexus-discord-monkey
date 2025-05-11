@@ -1,11 +1,15 @@
 {
     "name": "Discord Monkey",
     "id": "aarontburn.Discord_Monkey",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "author": "aarontburn",
     "description": "'Embedding' Discord as a Nexus module. By monkeying it around.",
     "platforms": [],
     "link": "https://github.com/aarontburn/nexus-discord-monkey",
+    "git-latest": {
+        "git-username": "aarontburn",
+        "git-repo-name": "nexus-discord-monkey"
+    },
     "build": {
         "build-version": 5,
         "excluded": [
